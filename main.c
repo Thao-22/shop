@@ -24,9 +24,9 @@ int main() {
         printf("  [4] Quan ly Tai Chinh & Thu Chi (Finance)\n");
         printf("  [0] Thoat chuong trinh\n");
         printf("=========================================================\n");
-        printf("\033[1;35m>>> HAY CLICK CHUOT VAO DONG BAN MUON CHON <<<\033[0m\n");
+        printf("\033[1;35m>>> VUI LONG NHAP SO (0-4) DE CHON CHUC NANG <<<\033[0m\n");
 
-        int choice = getMouseMenuChoice(3, 4);
+        int choice = getKeyboardChoice(4); // S? d?ng nh?p s? t? bàn phím
 
         if (choice == 0) {
             printf("\n\033[1;32mCam on da su dung phan mem. Tam biet!\033[0m\n");
@@ -49,8 +49,8 @@ int main() {
                     printf("  [1] Them ghi chep Thu / Chi thu cong\n");
                     printf("  [2] Xem Bao cao Doanh Thu & Loi Nhuan\n");
                     printf("  [0] Quay lai\n");
-                    printf("\n\033[1;35m[Dung chuot click hoac an so de chon...]\033[0m");
-                    int tcChoice = getMouseMenuChoice(3, 2);
+                    printf("\n\033[1;35m[Vui long nhap so 0-2 de chon...]\033[0m\n");
+                    int tcChoice = getKeyboardChoice(2);
                     if(tcChoice == 0) break;
                     if(tcChoice == 1) themGiaoDich();
                     if(tcChoice == 2) lapBaoCaoThuChi();
