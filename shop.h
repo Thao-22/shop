@@ -54,12 +54,12 @@ typedef struct {
 // Tien ich UI & He thong
 void clearBuffer();
 void setConsoleWindow();
-int getMouseMenuChoice(int startY, int numOptions);
+int getKeyboardChoice(int numOptions); // Ð? ð?i tên và tham s?
 void printHeader(const char* title);
 void pauseConsole();
 
 // Module Thu Chi
-void ghiGiaoDichVaoFile(ThuChi tc);
+void ghiGiaoDich(ThuChi tc);
 void themGiaoDich();
 void lapBaoCaoThuChi();
 
