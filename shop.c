@@ -11,7 +11,6 @@ void pauseConsole() {
 }
 
 void setConsoleWindow() {
-  
     SetConsoleOutputCP(65001); 
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD dwMode = 0;
@@ -29,102 +28,22 @@ void printHeader(const char* title) {
     printf("\033[0m");  
 }
 
-
-int getMouseMenuChoice(int startY, int numOptions) {
-    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
-    DWORD prev_mode;
-    GetConsoleMode(hInput, &prev_mode);
-    SetConsoleMode(hInput, ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT); 
-
-    INPUT_RECORD ir;
-    DWORD read;
+int getKeyboardChoice(int numOptions) {
+    int choice;
     while (1) {
-        ReadConsoleInput(hInput, &ir, 1, &read);
-        if (ir.EventType == MOUSE_EVENT) {
-            if (ir.Event.MouseEvent.dwEventFlags == 0 && ir.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED) {
-                int y = ir.Event.MouseEvent.dwMousePosition.Y;
-                if (y >= startY && y < startY + numOptions) {
-                    SetConsoleMode(hInput, prev_mode); 
-                    return y - startY + 1; 
-                } else if (y == startY + numOptions) {
-                    SetConsoleMode(hInput, prev_mode);
-                    return 0; 
-                }
+        printf("-> Lua chon cua ban: ");
+        if (scanf("%d", &choice) == 1) {
+            if (choice >= 0 && choice <= numOptions) {
+                clearBuffer();
+                return choice;
+            } else {
+                printf("\033[1;31m(!) Vui long nhap so tu 0 den %d.\033[0m\n", numOptions);
             }
-        }
-        if (ir.EventType == KEY_EVENT && ir.Event.KeyEvent.bKeyDown) {
-            char c = ir.Event.KeyEvent.uChar.AsciiChar;
-            if (c >= '0' && c <= '0' + numOptions) {
-                SetConsoleMode(hInput, prev_mode);
-                return c - '0';
-            }
+        } else {
+            printf("\033[1;31m(!) Lua chon khong hop le. Vui long nhap so.\033[0m\n");
+            clearBuffer(); // XÃ³a b? nh? Ã°?m n?u nh?p ch?
         }
     }
-}
-
-// ================= MODULE 2: THU CHI =================
-void ghiGiaoDichVaoFile(ThuChi tc) {
-    FILE *file = fopen(FILE_THUCHI, "a"); 
-    if (file == NULL) return;
-    fprintf(file, "%s,%s,%.2f,%d\n", tc.ngay, tc.moTa, tc.soTien, tc.loai);
-    fclose(file);
-}
-
-void themGiaoDich() {
-    printHeader("NHAP GIAO DICH THU/CHI MOI");
-    ThuChi tc;
-    printf("Nhap ngay (dd/mm/yyyy): "); 
-	scanf("%19s", tc.ngay); 
-	clearBuffer();
-    printf("Nhap mo ta giao dich: ");
-    fgets(tc.moTa, sizeof(tc.moTa), stdin);
-    tc.moTa[strcspn(tc.moTa, "\n")] = 0;
-    printf("Nhap so tien: "); 
-	scanf("%f", &tc.soTien);
-    printf("Loai (1: THU, 0: CHI): "); 
-	scanf("%d", &tc.loai);
-    ghiGiaoDichVaoFile(tc);
-    printf("\033[1;32m-> Da luu giao dich thanh cong!\033[0m\n");
-    pauseConsole();
-}
-
-void lapBaoCaoThuChi() {
-    printHeader("BAO CAO THU CHI DOANH NGHIEP");
-    FILE *file = fopen(FILE_THUCHI, "r");
-    if (file == NULL) {
-        printf("(!) Chua co du lieu thu chi.\n"); 
-		pauseConsole(); 
-		return;
-    }
-    char buffer[256];
-    float tongThu = 0, tongChi = 0;
-    printf("%-12s | %-25s | %-15s | %-10s\n", "Ngay", "Mo ta", "So tien", "Loai");
-    printf("---------------------------------------------------------------\n");
-    while (fgets(buffer, sizeof(buffer), file)) {
-        ThuChi tc;
-        char *token = strtok(buffer, ","); 
-		if(!token) 
-			continue; 
-		strcpy(tc.ngay, token);
-        token = strtok(NULL, ","); 
-		if(!token) continue; strcpy(tc.moTa, token);
-        token = strtok(NULL, ","); 
-		if(!token) continue; tc.soTien = atof(token);
-        token = strtok(NULL, ","); 
-		if(!token) continue; tc.loai = atoi(token);
-        printf("%-12s | %-25s | %-15.2f | %-10s\n", tc.ngay, tc.moTa, tc.soTien, tc.loai == 1 ? "\033[1;32mThu\033[0m" : "\033[1;31mChi\033[0m");
-        if (tc.loai == 1) 
-			tongThu += tc.soTien; 
-		else 
-			tongChi += tc.soTien;
-    }
-    fclose(file);
-    float loiNhuan = tongThu - tongChi;
-    printf("---------------------------------------------------------------\n");
-    printf("TONG THU : \033[1;32m+%.2f VND\033[0m\n", tongThu);
-    printf("TONG CHI : \033[1;31m-%.2f VND\033[0m\n", tongChi);
-    printf("LOI NHUAN: %s%.2f VND\033[0m\n", loiNhuan >= 0 ? "\033[1;32m" : "\033[1;31m", loiNhuan);
-    pauseConsole();
 }
 
 // ================= MODULE 1: CHIC FLOW =================
@@ -144,7 +63,7 @@ void addProduct(Product **head) {
 	pauseConsole();
 }
 
-void sellProductChicFlow(Product *head) {
+void sellProduct(Product *head) {
     if (head == NULL) { 
 		printf("(!) Kho trong.\n"); 
 		pauseConsole(); 
@@ -162,7 +81,7 @@ void sellProductChicFlow(Product *head) {
             float finalPrice = current->price * (1.0f - (discount / 100.0f));
             printf("\n\033[1;32mDA BAN THANH CONG: %.2f\033[0m\n", finalPrice);
             ThuChi tc = {"Auto", "Ban SP Thiet Ke (ChicFlow)", finalPrice, 1};
-            ghiGiaoDichVaoFile(tc);
+            ghiGiaoDich(tc);
             pauseConsole();
 		 	return;
         }
@@ -219,18 +138,83 @@ void menuChicFlow(Product **head) {
         printf("  [2] Ban hang & Giam gia\n");
         printf("  [3] Luu du lieu vao tep\n");
         printf("  [0] Quay lai menu chinh\n");
-        printf("\n\033[1;35m[Dung chuot click hoac an so de chon...]\033[0m");
-        int choice = getMouseMenuChoice(3, 3);
+        printf("\n\033[1;35m[Vui long nhap so 0-3 de chon...]\033[0m\n");
+        int choice = getKeyboardChoice(3);
         if(choice == 0) break;
         switch(choice) {
             case 1: addProduct(head); break;
-            case 2: sellProductChicFlow(*head); break;
+            case 2: sellProduct(*head); break;
             case 3: saveToFile(*head); break;
         }
     }
 }
 
-// ================= MODULE 3: NHÂN VIÊN =================
+// ================= MODULE 2: THU CHI =================
+void ghiGiaoDich(ThuChi tc) {
+    FILE *file = fopen("thuchi.txt", "a"); 
+    if (file == NULL) return;
+    fprintf(file, "%s,%s,%.2f,%d\n", tc.ngay, tc.moTa, tc.soTien, tc.loai);
+    fclose(file);
+}
+
+void themGiaoDich() {
+    printHeader("NHAP GIAO DICH THU/CHI MOI");
+    ThuChi tc;
+    printf("Nhap ngay (dd/mm/yyyy): "); 
+	scanf("%19s", tc.ngay); 
+	clearBuffer();
+    printf("Nhap mo ta giao dich: ");
+    fgets(tc.moTa, sizeof(tc.moTa), stdin);
+    tc.moTa[strcspn(tc.moTa, "\n")] = 0;
+    printf("Nhap so tien: "); 
+	scanf("%f", &tc.soTien);
+    printf("Loai (1: THU, 0: CHI): "); 
+	scanf("%d", &tc.loai);
+    ghiGiaoDich(tc);
+    printf("-> Da luu giao dich thanh cong!\n");
+    pauseConsole();
+}
+
+void lapBaoCaoThuChi() {
+    printHeader("BAO CAO THU CHI DOANH NGHIEP");
+    FILE *file = fopen("thuchi.txt", "r");
+    if (file == NULL) {
+        printf("(!) Chua co du lieu thu chi.\n"); 
+		pauseConsole(); 
+		return;
+    }
+    char buffer[256];
+    float tongThu = 0, tongChi = 0;
+    printf("%-12s | %-25s | %-15s | %-10s\n", "Ngay", "Mo ta", "So tien", "Loai");
+    printf("---------------------------------------------------------------\n");
+    while (fgets(buffer, sizeof(buffer), file)) {
+        ThuChi tc;
+        char *token = strtok(buffer, ","); 
+		if(!token) 
+			continue; 
+		strcpy(tc.ngay, token);
+        token = strtok(NULL, ","); 
+		if(!token) continue; strcpy(tc.moTa, token);
+        token = strtok(NULL, ","); 
+		if(!token) continue; tc.soTien = atof(token);
+        token = strtok(NULL, ","); 
+		if(!token) continue; tc.loai = atoi(token);
+        printf("%-12s | %-25s | %-15.2f | %-10s\n", tc.ngay, tc.moTa, tc.soTien, tc.loai == 1 ? "\033[1;32mThu\033[0m" : "\033[1;31mChi\033[0m");
+        if (tc.loai == 1) 
+			tongThu += tc.soTien; 
+		else 
+			tongChi += tc.soTien;
+    }
+    fclose(file);
+    float loiNhuan = tongThu - tongChi;
+    printf("---------------------------------------------------------------\n");
+    printf("TONG THU : \033[1;32m+%.2f VND\033[0m\n", tongThu);
+    printf("TONG CHI : \033[1;31m-%.2f VND\033[0m\n", tongChi);
+    printf("LOI NHUAN: %s%.2f VND\033[0m\n", loiNhuan >= 0 ? "\033[1;32m" : "\033[1;31m", loiNhuan);
+    pauseConsole();
+}
+
+// ================= MODULE 3: NHÃ‚N VIÃŠN =================
 void nhapNV(int *n, NhanVien a[]) {
     printf("Nhap so luong nhan vien: "); 
 	scanf("%d", n); 
@@ -305,8 +289,8 @@ void menuNhanVien(int *n, NhanVien a[]) {
         printf("  [3] Them nhan vien\n");
         printf("  [4] Xoa nhan vien\n");
         printf("  [0] Quay lai\n");
-        printf("\n\033[1;35m[Dung chuot click hoac an so de chon...]\033[0m");
-        int choice = getMouseMenuChoice(3, 4);
+        printf("\n\033[1;35m[Vui long nhap so 0-4 de chon...]\033[0m\n");
+        int choice = getKeyboardChoice(4);
         if(choice == 0) break;
         switch(choice) {
             case 1: nhapNV(n, a); break;
@@ -317,7 +301,7 @@ void menuNhanVien(int *n, NhanVien a[]) {
     }
 }
 
-// ================= MODULE 4: KHO HÀNG =================
+// ================= MODULE 4: KHO HÃ€NG =================
 int nhapSoLuong() {
     int x; char c;
     while(1) {
@@ -413,7 +397,7 @@ void sellKho(int n, Sanpham ds[]) {
                 ds[i].soLuong -= sl; ds[i].daban += sl;
                 printf("\033[1;32mBan thanh cong! Thu duoc: %.2f\033[0m\n", giasauGiam);
                 ThuChi tc = {"Auto", "Ban SP Kho", giasauGiam, 1};
-                ghiGiaoDichVaoFile(tc);
+                ghiGiaoDich(tc);
             } else printf("Kho khong du!\n");
             break;
         }
@@ -434,8 +418,8 @@ void kiemTraKho(int n, Sanpham ds[]) {
             }
             ds[i].soLuong += boSung;
             printf("\033[1;32mDa bo sung!\033[0m\n");
-            ThuChi tc = {"Auto", "Nhap them hang Kho", boSung * (ds[i].Gia * 0.6), 0}; // Gia dinh chi phi nhap bang 60% gia ban
-            ghiGiaoDichVaoFile(tc);
+            ThuChi tc = {"Auto", "Nhap them hang Kho", boSung * (ds[i].Gia * 0.6), 0}; 
+            ghiGiaoDich(tc);
         }
     }
     if(check == 0) printf("\nKhong co hang sap het.\n");
@@ -468,8 +452,8 @@ void menuKhoHang(int *n, Sanpham ds[]) {
         printf("  [4] Kiem tra & Bo sung\n");
         printf("  [5] San pham ban chay\n");
         printf("  [0] Quay lai\n");
-        printf("\n\033[1;35m[Dung chuot click hoac an so de chon...]\033[0m");
-        int choice = getMouseMenuChoice(3, 5);
+        printf("\n\033[1;35m[Vui long nhap so 0-5 de chon...]\033[0m\n");
+        int choice = getKeyboardChoice(5);
         if(choice == 0) break;
         switch(choice) {
             case 1: nhapHang(n, ds); break;
