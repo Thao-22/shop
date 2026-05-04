@@ -6,6 +6,7 @@
 #include <string.h>
 #include <math.h>
 #include <windows.h>
+#include <time.h>
 
 #ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
 #define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
@@ -54,7 +55,7 @@ typedef struct {
 // Tien ich UI & He thong
 void clearBuffer();
 void setConsoleWindow();
-int getKeyboardChoice(int numOptions); // Ð? ð?i tên và tham s?
+int getKeyboardChoice(int numOptions); 
 void printHeader(const char* title);
 void pauseConsole();
 
@@ -65,8 +66,12 @@ void lapBaoCaoThuChi();
 
 // Module Chic Flow (Thiet ke)
 void addProduct(Product **head);
-void sellProductChicFlow(Product *head);
+void sellProduct(Product *head); 
+void updateProduct(Product *head);   
+void deleteProduct(Product **head);  
+void sortProducts(Product **head);   
 void saveToFile(Product *head);
+void exportReport(Product *head);
 void loadFromFile(Product **head);
 void freeList(Product *head);
 void menuChicFlow(Product **head);
