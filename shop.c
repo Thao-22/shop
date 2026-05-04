@@ -41,7 +41,7 @@ int getKeyboardChoice(int numOptions) {
             }
         } else {
             printf("\033[1;31m(!) Lua chon khong hop le. Vui long nhap so.\033[0m\n");
-            clearBuffer(); // Xóa b? nh? ð?m n?u nh?p ch?
+            clearBuffer();
         }
     }
 }
@@ -91,6 +91,111 @@ void sellProduct(Product *head) {
 	clearBuffer(); 
 	pauseConsole();
 }
+void deleteProduct(Product **head) {
+    if (*head == NULL) {
+        printf("(!) Kho trong.\n");
+        pauseConsole();
+        return;
+    }
+    int targetId;
+    printf("Nhap ID san pham can xoa: ");
+    scanf("%d", &targetId);
+    clearBuffer();
+
+    Product *temp = *head, *prev = NULL;
+    if (temp != NULL && temp->id == targetId) {
+        *head = temp->next; 
+        free(temp);         
+        printf("\033[1;32m=> Da xoa san pham thanh cong.\033[0m\n");
+        pauseConsole();
+        return;
+    }
+    while (temp != NULL && temp->id != targetId) {
+        prev = temp;
+        temp = temp->next;
+    }
+    if (temp == NULL) {
+        printf("(!) Khong tim thay ID.\n");
+        pauseConsole();
+        return;
+    }
+    prev->next = temp->next;
+    free(temp);
+    printf("\033[1;32m=> Da xoa san pham thanh cong.\033[0m\n");
+    pauseConsole();
+}
+
+void updateProduct(Product *head) {
+    if (head == NULL) {
+        printf("(!) Kho trong.\n");
+        pauseConsole();
+        return;
+    }
+    int targetId;
+    printf("Nhap ID san pham can sua: ");
+    scanf("%d", &targetId);
+    clearBuffer();
+
+    Product *current = head;
+    while (current != NULL) {
+        if (current->id == targetId) {
+            printf("Nhap ten moi (Hien tai: %s): ", current->name);
+            fgets(current->name, MAX_STR, stdin);
+            current->name[strcspn(current->name, "\n")] = 0; // XÃ³a k? t? \n
+            
+            printf("Nhap gia moi (Hien tai: %.2f): ", current->price);
+            scanf("%f", &current->price);
+            clearBuffer();
+            
+            printf("\033[1;32m=> Da cap nhat thong tin san pham.\033[0m\n");
+            pauseConsole();
+            return;
+        }
+        current = current->next;
+    }
+    printf("(!) Khong tim thay ID de sua.\n");
+    pauseConsole();
+}
+
+void sortProducts(Product **head) {
+    if (*head == NULL || (*head)->next == NULL) {
+        printf("(!) Khong du san pham de sap xep.\n");
+        pauseConsole();
+        return;
+    }
+    int swapped;
+    Product *ptr1;
+    Product *lptr = NULL;
+
+    do {
+        swapped = 0;
+        ptr1 = *head;
+
+        while (ptr1->next != lptr) {
+            if (ptr1->price > ptr1->next->price) { 
+                int tempId = ptr1->id;
+                char tempName[MAX_STR];
+                strcpy(tempName, ptr1->name);
+                float tempPrice = ptr1->price;
+
+                ptr1->id = ptr1->next->id;
+                strcpy(ptr1->name, ptr1->next->name);
+                ptr1->price = ptr1->next->price;
+
+                ptr1->next->id = tempId;
+                strcpy(ptr1->next->name, tempName);
+                ptr1->next->price = tempPrice;
+                
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+        lptr = ptr1;
+    } while (swapped);
+    
+    printf("\033[1;32m=> Da sap xep danh sach tang dan theo gia tien.\033[0m\n");
+    pauseConsole();
+}
 
 void saveToFile(Product *head) {
     FILE *f = fopen(FILE_NAME, "w");
@@ -130,21 +235,60 @@ void freeList(Product *head) {
 		free(temp); 
 	}
 }
+void exportReport(Product *head) {
+    if (head == NULL) {
+        printf("(!) Khong co du lieu de xuat bao cao.\n");
+        pauseConsole();
+        return;
+    }
 
+    FILE *f = fopen("BaoCao_ChicFlow.txt", "w");
+    if (!f) {
+        printf("(!) Loi: Khong the tao file bao cao.\n");
+        return;
+    }
+    fprintf(f, "======================================================================\n");
+    fprintf(f, "                 BAO CAO DANH SACH SAN PHAM THIET KE                 \n");
+    fprintf(f, "======================================================================\n");
+    fprintf(f, "| %-10s | %-30s | %-15s |\n", "ID", "TEN SAN PHAM", "GIA NIEM YET");
+    fprintf(f, "----------------------------------------------------------------------\n");
+
+    Product *current = head;
+    while (current != NULL) {
+        fprintf(f, "| %-10d | %-30s | %-15.2f |\n", current->id, current->name, current->price);
+        current = current->next;
+    }
+
+    fprintf(f, "======================================================================\n");
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    fprintf(f, "Ngay xuat bao cao: %02d/%02d/%d luc %02d:%02d:%02d\n", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900, tm.tm_hour, tm.tm_min, tm.tm_sec);
+    fclose(f);
+    printf("\033[1;32m=> Da xuat bao cao thanh cong vao file 'BaoCao_ChicFlow.txt'!\033[0m\n");
+    pauseConsole();
+}
 void menuChicFlow(Product **head) {
     while(1) {
         printHeader("QUAN LY SAN PHAM THIET KE (CHIC FLOW)");
         printf("  [1] Them moi san pham\n");
         printf("  [2] Ban hang & Giam gia\n");
-        printf("  [3] Luu du lieu vao tep\n");
+        printf("  [3] Sua san pham\n");          
+        printf("  [4] Xoa san pham\n");          
+        printf("  [5] Sap xep (Theo gia)\n");    
+        printf("  [6] Luu du lieu vao tep\n");
+        printf("  [7] Xuat bao cao dang bang (.txt)\n");
         printf("  [0] Quay lai menu chinh\n");
-        printf("\n\033[1;35m[Vui long nhap so 0-3 de chon...]\033[0m\n");
-        int choice = getKeyboardChoice(3);
+        printf("\n\033[1;35m[Vui long nhap so 0-6 de chon...]\033[0m\n");
+        int choice = getKeyboardChoice(7); 
         if(choice == 0) break;
         switch(choice) {
             case 1: addProduct(head); break;
             case 2: sellProduct(*head); break;
-            case 3: saveToFile(*head); break;
+            case 3: updateProduct(*head); break; 
+            case 4: deleteProduct(head); break;  
+            case 5: sortProducts(head); break;   
+            case 6: saveToFile(*head); break;
+            case 7: exportReport(*head); break;
         }
     }
 }
@@ -214,7 +358,7 @@ void lapBaoCaoThuChi() {
     pauseConsole();
 }
 
-// ================= MODULE 3: NHÂN VIÊN =================
+// ================= MODULE 3: NHAN VIEN =================
 void nhapNV(int *n, NhanVien a[]) {
     printf("Nhap so luong nhan vien: "); 
 	scanf("%d", n); 
@@ -301,7 +445,7 @@ void menuNhanVien(int *n, NhanVien a[]) {
     }
 }
 
-// ================= MODULE 4: KHO HÀNG =================
+// ================= MODULE 4: KHO HANG =================
 int nhapSoLuong() {
     int x; char c;
     while(1) {
