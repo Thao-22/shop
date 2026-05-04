@@ -30,6 +30,7 @@ int main() {
 
         if (choice == 0) {
             printf("\n\033[1;32mCam on da su dung phan mem. Tam biet!\033[0m\n");
+            saveToFile(chicFlowData); 
             break;
         }
 
