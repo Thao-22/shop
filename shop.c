@@ -428,7 +428,7 @@ float trungBinhHeSoLuong(int n, NhanVien a[]) {
 void menuNhanVien(int *n, NhanVien a[]) {
     int chon;
     do {
-        printf("\n========== MENU ==========\n");
+        printf("\n========== QUAN LY NHAN VIEN SHOP ==========\n");
         printf("1. Nhap danh sach nhan vien\n");
         printf("2. Xuat danh sach nhan vien\n");
         printf("3. Them nhan vien\n");
