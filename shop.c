@@ -282,23 +282,47 @@ float trungBinhHeSoLuong(int n, NhanVien a[]) {
 }
 
 void menuNhanVien(int *n, NhanVien a[]) {
-    while(1) {
-        printHeader("QUAN LY NHAN SUNG");
-        printf("  [1] Nhap danh sach ban dau\n");
-        printf("  [2] Xem danh sach NV\n");
-        printf("  [3] Them nhan vien\n");
-        printf("  [4] Xoa nhan vien\n");
-        printf("  [0] Quay lai\n");
-        printf("\n\033[1;35m[Vui long nhap so 0-4 de chon...]\033[0m\n");
-        int choice = getKeyboardChoice(4);
-        if(choice == 0) break;
-        switch(choice) {
-            case 1: nhapNV(n, a); break;
-            case 2: xuatNV(*n, a); break;
-            case 3: themNhanVien(n, a); break;
-            case 4: xoaNhanVien(n, a); break;
+    int chon;
+    do {
+        printf("\n========== QUAN LY NHAN VIEN SHOP ==========\n");
+        printf("1. Nhap danh sach nhan vien\n");
+        printf("2. Xuat danh sach nhan vien\n");
+        printf("3. Them nhan vien\n");
+        printf("4. Xoa nhan vien\n");
+        printf("5. Tong he so luong\n");
+        printf("6. Trung binh he so luong\n");
+        printf("0. Thoat\n");
+        printf("==========================\n");
+        printf("Nhap lua chon: ");
+        scanf("%d", &chon);
+
+        switch(chon) {
+            case 1:
+                nhap(n, a);
+                break;
+            case 2:
+                xuat(*n, a);
+                break;
+            case 3:
+                themNhanVien(n, a);
+                break;
+            case 4:
+                xoaNhanVien(n, a);
+                break;
+            case 5:
+                printf("Tong he so luong: %.2f\n", tongHeSoLuong(*n, a));
+                break;
+            case 6:
+                printf("Trung binh he so luong: %.2f\n", trungBinhHeSoLuong(*n, a));
+                break;
+            case 0:
+                printf("Thoat chuong trinh!\n");
+                break;
+            default:
+                printf("Lua chon khong hop le!\n");
         }
-    }
+
+    } while(chon != 0);
 }
 
 // ================= MODULE 4: KHO HÀNG =================
