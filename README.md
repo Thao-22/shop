@@ -9,24 +9,29 @@ Chương trình bao gồm 4 phân hệ chính:
 
 1. Quản lý Thiết Kế & Sản Phẩm Mới (Chic Flow):
     * Sử dụng cấu trúc dữ liệu Danh sách liên kết đơn (Linked List).
-    * Thêm mới sản phẩm thiết kế, quản lý giá niêm yết.
+    * Nhập hàng từ kho lên cửa hàng để trưng bày.
     * Bán hàng và áp dụng chương trình giảm giá.
+    * Thống kê sản phẩm bán chạy nhất.
+    * Chỉnh sửa sản phẩm
+    * Xóa sản phẩm mà cửa hàng không còn bán.
+    * Sắp xếp sản phẩm theo giá tiền.
     * Lưu trữ và đọc dữ liệu từ file `chic_flow_data.txt`.
 
 2. Quản lý Kho Hàng & Bán Hàng (Inventory):
     * Quản lý hàng tồn kho theo tên sản phẩm và size.
     * Tự động cộng dồn số lượng nếu sản phẩm đã tồn tại.
     * Cảnh báo hàng sắp hết và hỗ trợ nhập bổ sung.
-    * Thống kê sản phẩm bán chạy nhất.
-
+   
 3. Quản lý Nhân Viên (HR):
-    * Quản lý danh sách nhân sự: Họ tên, tuổi, giới tính, hệ số lương.
+    * Quản lý danh sách nhân sự: Họ tên, tuổi, chức vụ, giới tính, hệ số lương.
     * Thêm, xóa và hiển thị danh sách nhân viên.
-    * Tính toán tổng hệ số lương và trung bình cộng.
-    * 
+    * Chức vụ khác nhau --> Hệ số lương khác nhau.
+    * Tính lương cho từng nhân viên: lương cơ bản x hệ số lương.
+      
 4. Quản lý Tài Chính & Thu Chi (Finance):
     * Ghi chép lịch sử thu/chi thủ công.
     * Tự động ghi lại các giao dịch bán hàng từ các module khác.
+    * Tự đông ghi lại các khoản chi từ việc nhập hàng vào kho.
     * Lập báo cáo doanh thu, chi phí và lợi nhuận tổng quát.
     * Dữ liệu được lưu trữ trong file `thuchi.txt`.
 
