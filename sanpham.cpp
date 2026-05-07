@@ -3,10 +3,12 @@
 #include <math.h>
 
 #define MAX 100
+#define FILE_KHOHANG "khohang.txt"
 
 typedef struct {
    char Tensp[100];
    char Size[10];
+   int id;
    int soLuong;
    float Gia;
    int daban;
@@ -49,10 +51,14 @@ void nhapHang(){
 	getchar();
 	for(int i=0;i<m;i++){
 		char ten[100],size[10];
-		int sl;
+		int sl, idMoi;
 		float gia;
 	printf("\n==San Pham %d==\n",i+1);
 	
+    printf("- Nhap ID cho san pham: ");
+    scanf("%d", &idMoi);
+    getchar(); 
+
 	printf("-Nhap ten san pham:");
 	fgets(ten,sizeof(ten),stdin);
 	ten[strcspn(ten,"\n")]=0;
@@ -65,7 +71,7 @@ void nhapHang(){
 	
 	int found=-1;
 	for(int j=0;j<n;j++){
-		if(strcmp(ds[j].Tensp,ten)== 0 && strcmp(ds[j].Size,size)== 0){
+		if(ds[j].id == idMoi || strcmp(ds[j].Tensp,ten)== 0 && strcmp(ds[j].Size,size)== 0){
 		    found=j;
 		    break;
 		}
@@ -77,7 +83,8 @@ void nhapHang(){
 		printf("-Nhap gia cua san pham:");
         scanf("%f",&gia);
 	    getchar();
-	
+	    
+	    ds[n].id = idMoi; 
 	    strcpy(ds[n].Tensp,ten);
 	    strcpy(ds[n].Size,size);
 	    ds[n].Gia=gia;
@@ -86,6 +93,7 @@ void nhapHang(){
 	    ds[n].giamgia=0;
 	    
 	    n++;
+        printf("\033[1;32mDa them san pham moi voi ID %d thanh cong!\033[0m\n", idMoi);
 	}
 }
 }
@@ -111,45 +119,6 @@ void discount(){
 	printf("Gia da cap nhat\n");
 }
 
-
-void sell(){
-	char ten[100], size[10];
-	int sl;
-	printf("Ten san pham:");
-	fgets(ten,sizeof(ten),stdin);
-	ten[strcspn(ten,"\n")]=0;
-	
-	printf("Size do:");
-	fgets(size,sizeof(size),stdin);
-	size[strcspn(size,"\n")]=0;
-	
-	sl=nhapSoLuong();
-	
-	int found=0;
-	for(int i=0;i<n;i++){
-		if(strcmp(ds[i].Tensp,ten) ==0 && strcmp(ds[i].Size,size)== 0 ){
-			found=1;
-			
-            if(ds[i].soLuong >= sl){
-            	discount();
-            	float giasauGiam = sl * ds[i].Gia * (1-ds[i].giamgia/100);
-            	 
-	            ds[i].soLuong-=sl;
-		        ds[i].daban+=sl;
-		        
-		        printf("Ban thanh cong voi gia :%.2f\n",giasauGiam);
-		    }else{
-		    	printf("Hang trong kho khong du !\n");
-			}
-			break;
-		}
-	}
-	if(found==0){
-		printf("Khong tim thay san pham nay !");	
-	}
-}
-
-
 void kiemTra(){
    	for(int i=0;i<n;i++){
 	    if(ds[i].soLuong<2){
@@ -172,28 +141,24 @@ void kiemTra(){
    	printf("\nKhong co hang can bo sung");
 }
 
-
-void favProducts(){
-    int max=-1;
-    int index=-1;
-        for(int i=0;i<n;i++){
-     	    if(ds[i].daban > max){
-     		    max=ds[i].daban;
-     		    index=i;
-     	    }
-     	}
-     	if(index!=-1){
-     		printf("Cac san pham ban chay nhat:\n ");
-     		for(int i=0;i<n;i++){
-     			if(ds[i].daban == max){
-     				printf("%s da ban %d \n",ds[i].Tensp, ds[i].daban);
-     			}
-     		}
-     	}else{
-     		printf("Khong tim thay du lieu ban hang !\n");
-		}
+void saveKhoToFile() {
+    FILE *f = fopen(FILE_KHOHANG, "w");
+    if(!f) return;
+    int i;
+    for(i=0; i<n; i++)
+        fprintf(f, "%s|%s|%d|%.2f|%d|%.2f\n", ds[i].Tensp, ds[i].Size, ds[i].soLuong, ds[i].Gia, ds[i].daban, ds[i].giamgia);
+    fclose(f);
 }
 
+void loadKhoFromFile() {
+    FILE *f = fopen(FILE_KHOHANG, "r");
+    if(!f) return;
+    n = 0;
+    while(fscanf(f, "%[^|]|%[^|]|%d|%f|%d|%f\n", ds[n].Tensp, ds[n].Size, &ds[n].soLuong, &ds[n].Gia, &ds[n].daban, &ds[n].giamgia) == 6) {
+        n++;
+    }
+    fclose(f);
+}
 
 int main(){
 	int choice;
@@ -202,19 +167,17 @@ int main(){
         printf("\n===== MENU =====\n");
         printf("1. Nhap san pham\n");
         printf("2. Hien thi\n");
-        printf("3. Ban hang\n");
-        printf("4. Kiem tra ton kho\n");
-        printf("5. Kiem tra san pham ban chay nhat\n");
+        printf("3. Kiem tra ton kho\n");
         printf("0. Thoat\n");
+        printf("4. Luu du lieu vao file\n");
         printf("Choice: ");
         scanf("%d", &choice);
         getchar();
         switch (choice) {
             case 1: nhapHang(); break;
             case 2: show(); break;
-            case 3: sell(); break;
-            case 4: kiemTra(); break;
-            case 5: favProducts(); break;
+            case 3: kiemTra(); break;
+            case 4: saveKhoToFile(); break;
         }
     } while (choice != 0);
 
