@@ -132,6 +132,14 @@ void tinhLuong(int n, NhanVien a[]) {
 
 void menuNhanVien(int *n, NhanVien a[]) {
     int chon;
+    printf(BOLD BLUE "========== QUAN LY NHAN VIEN SHOP ==========\n" RESET);
+    do {
+        printf(CYAN "Nhap luong co ban (VND): " RESET);
+        scanf("%f", &luongCoBan);
+        if (luongCoBan <= 0)
+            printf(RED "Luong co ban phai lon hon 0, vui long nhap lai!\n" RESET);
+    } while (luongCoBan <= 0);
+
     do {
         printf(BOLD BLUE "\n========== QUAN LY NHAN VIEN SHOP ==========\n" RESET);
         printf(YELLOW "1. " RESET "Nhap danh sach nhan vien\n");
@@ -164,14 +172,6 @@ void menuNhanVien(int *n, NhanVien a[]) {
 int main() {
     int n = 0;
     NhanVien a[100];
-
-    printf(BOLD BLUE "========== QUAN LY NHAN VIEN SHOP ==========\n" RESET);
-    do {
-        printf(CYAN "Nhap luong co ban (VND): " RESET);
-        scanf("%f", &luongCoBan);
-        if (luongCoBan <= 0)
-            printf(RED "Luong co ban phai lon hon 0, vui long nhap lai!\n" RESET);
-    } while (luongCoBan <= 0);
 
     menuNhanVien(&n, a);
     return 0;
