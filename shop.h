@@ -39,7 +39,8 @@ typedef struct {
     char hoTen[50];
     int tuoi;
     char gioiTinh[20];
-    float heSoluong; 
+    char chucVu[30];
+    float heSoLuong;
 } NhanVien;
 
 // 4. Module Kho Hang San Pham
