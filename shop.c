@@ -151,33 +151,32 @@ void menuChicFlow(Product **head) {
 
 // ================= MODULE 2: THU CHI =================
 void ghiGiaoDich(ThuChi tc) {
-    FILE *file = fopen("thuchi.txt", "a"); 
+    FILE *file = fopen(FILE_THUCHI, "a"); 
     if (file == NULL) return;
     fprintf(file, "%s,%s,%.2f,%d\n", tc.ngay, tc.moTa, tc.soTien, tc.loai);
     fclose(file);
 }
 
 void themGiaoDich() {
-    printHeader("NHAP GIAO DICH THU/CHI MOI");
+    printHeader("NHAP GIAO DICH MOI");
     ThuChi tc;
-    printf("Nhap ngay (dd/mm/yyyy): "); 
-	scanf("%19s", tc.ngay); 
-	clearBuffer();
-    printf("Nhap mo ta giao dich: ");
-    fgets(tc.moTa, sizeof(tc.moTa), stdin);
+    printf("Ngay (dd/mm/yyyy): "); scanf("%19s", tc.ngay); clearBuffer();
+    printf("Mo ta: "); fgets(tc.moTa, sizeof(tc.moTa), stdin);
     tc.moTa[strcspn(tc.moTa, "\n")] = 0;
-    printf("Nhap so tien: "); 
-	scanf("%f", &tc.soTien);
-    printf("Loai (1: THU, 0: CHI): "); 
-	scanf("%d", &tc.loai);
+    int i;
+    for(i = 0; i < strlen(tc.moTa); i++) {
+        if(tc.moTa[i] == ',') tc.moTa[i] = '-';
+    }
+    printf("So tien: "); scanf("%f", &tc.soTien);
+    printf("Loai (1: THU, 0: CHI): "); scanf("%d", &tc.loai);
     ghiGiaoDich(tc);
-    printf("-> Da luu giao dich thanh cong!\n");
+    printf("-> Luu thanh cong!\n");
     pauseConsole();
 }
 
 void lapBaoCaoThuChi() {
     printHeader("BAO CAO THU CHI DOANH NGHIEP");
-    FILE *file = fopen("thuchi.txt", "r");
+    FILE *file = fopen(FILE_THUCHI, "r");
     if (file == NULL) {
         printf("(!) Chua co du lieu thu chi.\n"); 
 		pauseConsole(); 
@@ -190,15 +189,21 @@ void lapBaoCaoThuChi() {
     while (fgets(buffer, sizeof(buffer), file)) {
         ThuChi tc;
         char *token = strtok(buffer, ","); 
-		if(!token) 
-			continue; 
+		if(!token) continue; 
 		strcpy(tc.ngay, token);
+        
         token = strtok(NULL, ","); 
-		if(!token) continue; strcpy(tc.moTa, token);
+		if(!token) continue; 
+        strcpy(tc.moTa, token);
+        
         token = strtok(NULL, ","); 
-		if(!token) continue; tc.soTien = atof(token);
+		if(!token) continue; 
+        tc.soTien = atof(token);
+        
         token = strtok(NULL, ","); 
-		if(!token) continue; tc.loai = atoi(token);
+		if(!token) continue; 
+        tc.loai = atoi(token);
+        
         printf("%-12s | %-25s | %-15.2f | %-10s\n", tc.ngay, tc.moTa, tc.soTien, tc.loai == 1 ? "\033[1;32mThu\033[0m" : "\033[1;31mChi\033[0m");
         if (tc.loai == 1) 
 			tongThu += tc.soTien; 
@@ -212,6 +217,19 @@ void lapBaoCaoThuChi() {
     printf("TONG CHI : \033[1;31m-%.2f VND\033[0m\n", tongChi);
     printf("LOI NHUAN: %s%.2f VND\033[0m\n", loiNhuan >= 0 ? "\033[1;32m" : "\033[1;31m", loiNhuan);
     pauseConsole();
+}
+void menuTaiChinh() {
+    while (1) {
+        printHeader("QUAN LY TAI CHINH & THU CHI");
+        printf("  [1] Nhap giao dich moi\n");
+        printf("  [2] Lap bao cao thu chi\n");
+        printf("  [0] Quay lai\n");
+        printf("\n\t");
+        int tcChoice = getKeyboardChoice(2);
+        if(tcChoice == 0) break;
+        if(tcChoice == 1) themGiaoDich();
+        if(tcChoice == 2) lapBaoCaoThuChi();
+    }
 }
 
 // ================= MODULE 3: NHÂN VIÊN =================
