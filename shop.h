@@ -63,6 +63,7 @@ void pauseConsole();
 void ghiGiaoDich(ThuChi tc);
 void themGiaoDich();
 void lapBaoCaoThuChi();
+void menuTaiChinh();
 
 // Module Chic Flow (Thiet ke)
 void addProduct(Product **head);
