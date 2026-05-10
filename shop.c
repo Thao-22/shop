@@ -375,7 +375,6 @@ void menuTaiChinh() {
         if(tcChoice == 2) lapBaoCaoThuChi();
     }
 }
-
 // ================= MODULE 3: NHAN VIEN =================
 void nhapNV(int *n, NhanVien a[]) {
     printf("Nhap so luong nhan vien: "); 
