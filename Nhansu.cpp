@@ -19,154 +19,186 @@ typedef struct {
     float heSoLuong;
 } NhanVien;
 
-float luongCoBan = 0;
-
 void nhapChucVu(NhanVien *nv) {
     int chon;
-    printf(CYAN "Chuc vu:\n" RESET);
-    printf(YELLOW "  1. Quan ly   (He so: 4.20)\n" RESET);
-    printf(YELLOW "  2. Nhan vien (He so: 2.20)\n" RESET);
-    printf(CYAN "  Lua chon: " RESET);
+    printf("Chuc vu:\n");
+    printf(" 1.Quan ly   (He so: 4.20)\n ");
+    printf(" 2.Nhan vien (He so: 2.20)\n");
+    printf("-->Lua chon: ");
     scanf("%d", &chon);
     while (chon != 1 && chon != 2) {
-        printf(RED "  Lua chon khong hop le, nhap lai: " RESET);
+        printf("\033[31m  Lua chon khong hop le, nhap lai: \033[0m");
         scanf("%d", &chon);
     }
     if (chon == 1) {
         strcpy(nv->chucVu, "Quan ly");
-        nv->heSoLuong = 4.2;
+        nv->heSoluong = 4.2;
     } else {
         strcpy(nv->chucVu, "Nhan vien");
-        nv->heSoLuong = 2.2;
+        nv->heSoluong = 2.2;
     }
 }
 
-void nhap(int *n, NhanVien a[]) {
-    printf(CYAN "Nhap so luong nhan vien cua shop: " RESET);
-    scanf("%d", n);
-    while (*n <= 0) {
-        printf(RED "Vui long nhap lai so luong nhan vien: " RESET);
-        scanf("%d", n);
-    }
-    for (int i = 0; i < *n; i++) {
-        printf(BOLD MAGENTA "\nNhan vien thu %d:\n" RESET, i+1);
-        while (getchar() != '\n');
-        printf(CYAN "Ho ten: " RESET);
-        fgets(a[i].hoTen, sizeof(a[i].hoTen), stdin);
-        a[i].hoTen[strcspn(a[i].hoTen, "\n")] = '\0';
-        printf(CYAN "Tuoi: " RESET);
-        scanf("%d", &a[i].tuoi);
-        printf(CYAN "Gioi tinh: " RESET);
-        scanf("%s", a[i].gioiTinh);
+void nhapNV(int *n, NhanVien a[]) {
+	int i;
+    printf("Nhap so luong nhan vien: "); 
+	scanf("%d", n); 
+    while (*n <= 0) { 
+	printf("Nhap lai: "); 
+	scanf("%d", n); } 
+    for(i = 0; i < *n; i++) {
+        printf("\nNhan vien thu %d:\n", i+1); 
+		clearBuffer();
+        printf("Ho ten: "); 
+		fgets(a[i].hoTen, sizeof(a[i].hoTen), stdin); 
+		a[i].hoTen[strcspn(a[i].hoTen, "\n")] = '\0';	
+        printf("Tuoi: "); 
+		scanf("%d", &a[i].tuoi);
+        printf("Gioi tinh: "); 
+		scanf("%s", a[i].gioiTinh);
         nhapChucVu(&a[i]);
-    }
+    } 
 }
 
-void xuat(int n, NhanVien a[]) {
-    printf(BOLD BLUE "\n-----DANH SACH NHAN VIEN-----\n" RESET);
-    for (int i = 0; i < n; i++) {
-        printf(BOLD MAGENTA "\nNhan vien thu %d:\n" RESET, i+1);
-        printf(CYAN "  Ho ten      : " RESET "%s\n",  a[i].hoTen);
-        printf(CYAN "  Tuoi        : " RESET "%d\n",  a[i].tuoi);
-        printf(CYAN "  Gioi tinh   : " RESET "%s\n",  a[i].gioiTinh);
-        
-        if (strcmp(a[i].chucVu, "Quan ly") == 0)
-            printf(CYAN "  Chuc vu     : " RESET YELLOW "%s\n" RESET, a[i].chucVu);
-        else
-            printf(CYAN "  Chuc vu     : " RESET WHITE "%s\n" RESET, a[i].chucVu);
+void xuatNV(int n, NhanVien a[]) {
+    printHeader("DANH SACH NHAN VIEN");
 
-        printf(CYAN "  He so luong : " RESET "%.2f\n", a[i].heSoLuong);
-        printf(CYAN "  Luong thang : " RESET GREEN "%.2f VND\n" RESET, a[i].heSoLuong * luongCoBan);
+    if(n == 0) {
+        printf("\033[1;31mKhong co nhan vien nao!\033[0m\n");
+        pauseConsole();
+        return;
     }
+
+    float luongCoBan = 2500;
+
+    printf("====================================================================================================\n");
+    printf("%-5s %-25s %-8s %-15s %-15s %-15s %-15s\n", "STT","HO TEN", "TUOI", "GIOI TINH", "CHUC VU", "HE SO LUONG", "LUONG");
+    printf("====================================================================================================\n");
+
+    int i;
+    for(i = 0; i < n; i++) {
+        printf("%-5d %-25s %-8d %-15s %-15s %-15.2f %-15.2f\n", i+1, a[i].hoTen, a[i].tuoi, 
+		    a[i].gioiTinh, a[i].chucVu, a[i].heSoluong, a[i].heSoluong * luongCoBan);
+    }
+    pauseConsole();
 }
 
 void themNhanVien(int *n, NhanVien a[]) {
-    int k;
-    printf(CYAN "Nhap so luong nhan vien muon them: " RESET);
-    scanf("%d", &k);
-    for (int i = 0; i < k; i++) {
-        printf(BOLD MAGENTA "\nNhap nhan vien moi thu %d:\n" RESET, i+1);
-        while (getchar() != '\n');
-        printf(CYAN "Ho ten: " RESET);
-        fgets(a[*n].hoTen, sizeof(a[*n].hoTen), stdin);
-        a[*n].hoTen[strcspn(a[*n].hoTen, "\n")] = '\0';
-        printf(CYAN "Tuoi: " RESET);
-        scanf("%d", &a[*n].tuoi);
-        printf(CYAN "Gioi tinh: " RESET);
-        scanf("%s", a[*n].gioiTinh);
+    int k,i; 
+	printf("So luong can them: "); 
+	scanf("%d", &k);
+    for (i=0 ; i<k ;i++) {
+        printf("\nNV moi thu %d:\n", i+1); clearBuffer();
+        printf("Ho ten: "); fgets(a[*n].hoTen, sizeof(a[*n].hoTen), stdin); a[*n].hoTen[strcspn(a[*n].hoTen, "\n")] = '\0';
+        printf("Tuoi: "); scanf("%d", &a[*n].tuoi);
+        printf("Gioi tinh: "); scanf("%s", a[*n].gioiTinh);
         nhapChucVu(&a[*n]);
-        (*n)++;
+        (*n)++; 
     }
 }
 
-void xoaNhanVien(int *n, NhanVien a[]) {
-    int viTri;
-    printf(CYAN "Nhap vi tri nhan vien can xoa (1 -> %d): " RESET, *n);
-    scanf("%d", &viTri);
-    if (viTri < 1 || viTri > *n) {
-        printf(RED "Vi tri khong hop le!\n" RESET);
+void xoaNV(int *n, NhanVien a[]) {
+    printHeader("XOA NHAN VIEN");
+    if(*n == 0) {
+        printf("Danh sach nhan vien trong!\n");
+        pauseConsole();
         return;
     }
-    for (int i = viTri - 1; i < *n - 1; i++) {
-        a[i] = a[i + 1];
+    char name[50];
+    printf("Nhap ho ten nhan vien can xoa: ");
+    fgets(name, sizeof(name), stdin);
+    name[strcspn(name, "\n")] = '\0';
+    int pos = -1;
+    int i;
+    for(i=0; i<*n; i++) {
+        if(strcmp(a[i].hoTen, name) == 0) {
+            pos = i;
+            break;
+        }
+    }
+    if(pos == -1) {
+        printf("Khong tim thay nhan vien!\n");
+        pauseConsole();
+        return;
+    }
+    char confirm;
+    printf("Ban co chac chan muon xoa nhan vien '%s'? (y/n): ", a[pos].hoTen);
+    scanf("%c", &confirm);
+    clearBuffer();
+    if(confirm != 'y' && confirm != 'Y') {
+        printf("Da huy thao tac xoa!\n");
+        pauseConsole();
+        return;
+    }
+
+    for(i=pos; i<*n-1; i++) {
+        a[i] = a[i+1];
     }
     (*n)--;
-    printf(GREEN "Da xoa nhan vien thanh cong!\n" RESET);
+    printf("Xoa nhan vien thanh cong!\n");
+    pauseConsole();
 }
 
 void tinhLuong(int n, NhanVien a[]) {
-    printf(BOLD BLUE "\n-----BANG LUONG NHAN VIEN-----\n" RESET);
-    for (int i = 0; i < n; i++) {
-        printf(MAGENTA "%-25s" RESET " | ", a[i].hoTen);
+    printf("\n-----BANG LUONG NHAN VIEN-----\n");
+    float luongCoBan = 2500;
+    int i;
+    for (i = 0; i < n; i++) {
+        printf("%-25s" " | ", a[i].hoTen);
 
         if (strcmp(a[i].chucVu, "Quan ly") == 0)
-            printf(YELLOW "%-10s" RESET, a[i].chucVu);
+            printf("%-10s", a[i].chucVu);
         else
-            printf(WHITE "%-10s" RESET, a[i].chucVu);
+            printf("%-10s", a[i].chucVu);
 
-        printf(" | " CYAN "He so: " RESET "%.2f"
-               " | " CYAN "Luong: " RESET GREEN "%.2f VND\n" RESET,
-               a[i].heSoLuong, a[i].heSoLuong * luongCoBan);
+        printf(" | " "He so: " "%.2f"
+               " | " "Luong: " "%.2f VND\n",
+               a[i].heSoluong, a[i].heSoluong * luongCoBan);
     }
 }
 
-void menuNhanVien(int *n, NhanVien a[]) {
-    int chon;
-    printf(BOLD BLUE "========== QUAN LY NHAN VIEN SHOP ==========\n" RESET);
-    do {
-        printf(CYAN "Nhap luong co ban (VND): " RESET);
-        scanf("%f", &luongCoBan);
-        if (luongCoBan <= 0)
-            printf(RED "Luong co ban phai lon hon 0, vui long nhap lai!\n" RESET);
-    } while (luongCoBan <= 0);
+void saveNVToFile(int n, NhanVien a[]) {
+    FILE *f = fopen(FILE_NHANVIEN, "w");
+    if(!f) return;
+    int i;
+    for(i=0; i<n; i++)
+        fprintf(f, "%s|%d|%s|%s|%.2f\n", a[i].hoTen, a[i].tuoi, a[i].gioiTinh, a[i].chucVu, a[i].heSoluong);
+    fclose(f);
+}
 
-    do {
-        printf(BOLD BLUE "\n========== QUAN LY NHAN VIEN SHOP ==========\n" RESET);
-        printf(YELLOW "1. " RESET "Nhap danh sach nhan vien\n");
-        printf(YELLOW "2. " RESET "Xuat danh sach nhan vien\n");
-        printf(YELLOW "3. " RESET "Them nhan vien\n");
-        printf(YELLOW "4. " RESET "Xoa nhan vien\n");
-        printf(YELLOW "5. " RESET "Tinh luong nhan vien\n");
-        printf(RED    "0. " RESET "Thoat\n");
-        printf(BOLD BLUE "=============================================\n" RESET);
-        printf(CYAN "Nhap lua chon: " RESET);
-        scanf("%d", &chon);
-        switch (chon) {
-            case 1: nhap(n, a); break;
-            case 2:
-                if (*n == 0) printf(RED "Chua co nhan vien nao!\n" RESET);
-                else xuat(*n, a);
-                break;
+void loadNVFromFile(int *n, NhanVien a[]) {
+    FILE *f = fopen(FILE_NHANVIEN, "r");
+    if(!f) return;
+    *n = 0;
+    while(fscanf(f,"%[^|]|%d|%[^|]|%[^|]|%f\n", a[*n].hoTen, &a[*n].tuoi, a[*n].gioiTinh, a[*n].chucVu, &a[*n].heSoluong) == 5)
+{
+    (*n)++;
+    }
+    fclose(f);
+}
+
+void menuNhanVien(int *n, NhanVien a[]) {
+    while(1) {
+        printHeader("QUAN LY NHAN SU");
+        printf("  [1] Nhap danh sach ban dau\n");
+        printf("  [2] Xem danh sach NV\n");
+        printf("  [3] Them nhan vien\n");
+        printf("  [4] Xoa nhan vien\n");
+        printf("  [5] Tinh luong nhan vien\n");
+        printf("  [0] Quay lai\n");
+        printf("\n\033[1;35m[Vui long nhap so 0-5 de chon...]\033[0m\n");
+        int choice = getKeyboardChoice(5);
+        if(choice == 0) break;
+        switch(choice) {
+            case 1: nhapNV(n, a); break;
+            case 2: xuatNV(*n, a); break;
             case 3: themNhanVien(n, a); break;
-            case 4: xoaNhanVien(n, a); break;
+            case 4: xoaNV(n, a); break;
             case 5:
-                if (*n == 0) printf(RED "Chua co nhan vien nao!\n" RESET);
+                if (*n == 0) printf("Chua co nhan vien nao!\n");
                 else tinhLuong(*n, a);
-                break;
-            case 0: printf(RED "Thoat chuong trinh!\n" RESET); break;
-            default: printf(RED "Lua chon khong hop le!\n" RESET);
         }
-    } while (chon != 0);
+    }
 }
 
 int main() {
