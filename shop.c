@@ -704,8 +704,14 @@ void menuNhanVien(int *n, NhanVien a[]) {
             case 3: themNhanVien(n, a); break;
             case 4: xoaNV(n, a); break;
             case 5:
-                if (*n == 0) printf("Chua co nhan vien nao!\n");
-                else tinhLuong(*n, a);
+                if (*n == 0){
+				    printf("Chua co nhan vien nao!\n");
+				    pauseConsole();
+				}else{
+				    tinhLuong(*n, a);
+					pauseConsole(); 
+				}
+			break;
         }
     }
 }
