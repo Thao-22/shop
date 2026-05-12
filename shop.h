@@ -49,8 +49,6 @@ typedef struct {
    	char Size[10];
    	int soLuong;
    	float Gia;
-   	int daban;
-   	float giamgia;
 } Sanpham;
 
 // --- Prototypes ---
@@ -85,7 +83,9 @@ void saveNVToFile(int n, NhanVien a[]);
 void loadNVFromFile(int *n, NhanVien a[]);
 void nhapNV(int *n, NhanVien a[]);
 void xuatNV(int n, NhanVien a[]);
-void tinhLuong(int n, NhanVien a[]) {
+void themNhanVien(int *n, NhanVien a[]);
+void xoaNV(int *n, NhanVien a[]);
+void tinhLuong(int n, NhanVien a[]);
 void menuNhanVien(int *n, NhanVien a[]);
 
 // Module Kho Hang
