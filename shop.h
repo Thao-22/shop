@@ -50,13 +50,15 @@ typedef struct {
 
 // 4. Module Kho Hang San Pham
 typedef struct {
-   int id;
-   char Tensp[100];
-   char Size[10];
-   int soLuong;
-   float Gia;
-   int daban;
-   float giamgia;
+  int id;
+    char Tensp[100];
+    char Size[10];
+    int soLuong;
+    int daban;
+    int hangLoi;
+    int hangTra;
+    float Gia;
+    float giamgia;
 } Sanpham;
 
 // Tien ich UI & He thong
@@ -97,9 +99,19 @@ void xoaNV(int *n, NhanVien a[]);
 void menuNhanVien(int *n, NhanVien a[]);
 
 // Module Kho Hang
+float nhapGia();
+int nhapSoNguyenDuong(char message[]);
+void nhapSize(char size[]);
+int giaTriSize(char size[]);
+void chuanHoaTen(char ten[]);
+void searchSanPham(int n, Sanpham ds[]);
+void searchTheoSize(int n, Sanpham ds[]);
+void thongKeKho(int n, Sanpham ds[]);
+void banHangKho(int n, Sanpham ds[]);
+void themSanPham(int *n, Sanpham ds[]);
+void sapXepTheoSize(int n, Sanpham ds[]);
 void saveKhoToFile(int n, Sanpham ds[]);
 void loadKhoFromFile(int *n, Sanpham ds[]);
-void nhapHang(int *n, Sanpham ds[]);
 void showKho(int n, Sanpham ds[]);
 void menuKhoHang(int *n, Sanpham ds[]);
 
